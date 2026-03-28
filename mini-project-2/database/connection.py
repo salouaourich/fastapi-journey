@@ -1,22 +1,23 @@
 from beanie import init_beanie, PydanticObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
-from pydantic import BaseSettings, BaseModel
+from pydantic import BaseModel
+from pydantic_settings import BaseSettings
 from typing import List, Any, Optional
-
-from models.events import Event
-from models.users import User
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: Optional[str] = None
+    DATABASE_URL: Optional[str] = "mongodb://localhost:27017"
 
     class Config:
         env_file = ".env"
 
     async def initialize_database(self):
+        from models.events import Event
+        from models.users import User
+
         client = AsyncIOMotorClient(self.DATABASE_URL)
         await init_beanie(
-            database=client.get_default_database(),
+            database=client["planner"],
             document_models=[Event, User]
         )
 
@@ -39,8 +40,7 @@ class Database:
         doc = await self.get(id)
         if not doc:
             return False
-
-        update_data = body.dict(exclude_unset=True)
+        update_data = {k: v for k, v in body.dict(exclude_unset=True).items() if v is not None}
         await doc.update({"$set": update_data})
         return doc
 
