@@ -1,0 +1,5 @@
+docker run vs kubectl run: docker run starts a container directly on my laptop and Docker, and manages it locally. ubectl run and sends the request to Kubernetes, and the cluster decides where the pod runs, so there is a control system behind it.
+Scheduler event: In the events, I saw that kube-scheduler selected the node for my pod. Its role is to choose the best node available to run it.
+Two kube system components: I noticed etcd stores all the cluster data, and kube apiserver handles all the commands I send with kubectl. They are important for how Kubernetes works.
+Alpine specific: When I exited the shell, all the changes I made disappeared. This shows that the container filesystem is temporary and does not persist after stopping.
+Task 6 reflection: When I deleted the pod, Kubernetes did not recreate it because it was a standalone pod.
